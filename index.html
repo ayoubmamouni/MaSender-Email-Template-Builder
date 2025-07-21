@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>MaSender - Email Template Builder</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/emailbuilder.js@1.3.2/dist/emailbuilder.min.js"></script>
+        <style>
+            .dropzone {
+                min-height: 300px;
+                border: 2px dashed #ccc;
+                transition: all 0.3s;
+            }
+            .dropzone.active {
+                border-color: #4f46e5;
+                background-color: #f0f9ff;
+            }
+            .element {
+                position: relative;
+                padding: 10px;
+                margin: 8px 0;
+                border: 1px solid #e5e7eb;
+                border-radius: 4px;
+                background: white;
+            }
+            .element:hover {
+                border-color: #4f46e5;
+            }
+            .element-settings {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            .element:hover .element-settings {
+                opacity: 1;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-100 min-h-screen">
+        <div class="container mx-auto py-8 px-4">
+            <h1 class="text-3xl font-bold text-center mb-8">
+                MaSender Email Template Builder
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Toolbox -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h2 class="text-xl font-semibold mb-4">Elements</h2>
+                    <div class="space-y-3">
+                        <div
+                            class="element-item bg-blue-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="heading"
+                        >
+                            <i class="fas fa-heading mr-2 text-blue-600"></i>
+                            Heading
+                        </div>
+                        <div
+                            class="element-item bg-green-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="text"
+                        >
+                            <i class="fas fa-paragraph mr-2 text-green-600"></i>
+                            Text
+                        </div>
+                        <div
+                            class="element-item bg-yellow-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="image"
+                        >
+                            <i class="fas fa-image mr-2 text-yellow-600"></i>
+                            Image
+                        </div>
+                        <div
+                            class="element-item bg-purple-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="button"
+                        >
+                            <i class="fas fa-square mr-2 text-purple-600"></i>
+                            Button
+                        </div>
+                        <div
+                            class="element-item bg-red-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="table"
+                        >
+                            <i class="fas fa-table mr-2 text-red-600"></i>
+                            Table
+                        </div>
+                        <div
+                            class="element-item bg-orange-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="divider"
+                        >
+                            <i class="fas fa-minus mr-2 text-orange-600"></i>
+                            Divider
+                        </div>
+                        <div
+                            class="element-item bg-pink-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="spacer"
+                        >
+                            <i
+                                class="fas fa-arrows-alt-v mr-2 text-pink-600"
+                            ></i>
+                            Spacer
+                        </div>
+                        <div
+                            class="element-item bg-teal-50 p-3 rounded cursor-move"
+                            draggable="true"
+                            data-type="list"
+                        >
+                            <i class="fas fa-list mr-2 text-teal-600"></i>
+                            List
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas -->
+                <div class="md:col-span-3">
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Email Canvas</h2>
+                            <div class="flex space-x-2">
+                                <button
+                                    id="canvasSettingsBtn"
+                                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                                >
+                                    <i class="fas fa-cog mr-1"></i>
+                                    Canvas Settings
+                                </button>
+                                <button
+                                    id="resetBtn"
+                                    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                                >
+                                    <i class="fas fa-trash mr-1"></i>
+                                    Reset
+                                </button>
+                                <button
+                                    id="exportBtn"
+                                    class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                                >
+                                    <i class="fas fa-copy mr-1"></i>
+                                    Use This Template
+                                </button>
+                            </div>
+                        </div>
+
+                        <div
+                            id="emailCanvas"
+                            class="dropzone p-4 bg-white"
+                            style="background-color: #ffffff"
+                        >
+                            <div class="text-center text-gray-500 py-16">
+                                <i
+                                    class="fas fa-mouse-pointer text-4xl mb-4"
+                                ></i>
+                                <p>Drag elements here to build your email</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div
+            id="settingsModal"
+            class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center"
+        >
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+                <div class="p-4 border-b">
+                    <h3 class="text-lg font-semibold">Element Settings</h3>
+                </div>
+                <div id="modalContent" class="p-4">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+                <div class="p-4 border-t flex justify-end space-x-2">
+                    <button id="cancelBtn" class="px-4 py-2 border rounded">
+                        Cancel
+                    </button>
+                    <button
+                        id="saveBtn"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded"
+                    >
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
